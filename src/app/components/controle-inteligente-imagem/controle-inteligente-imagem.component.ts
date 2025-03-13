@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,7 +11,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-
+import { MatDividerModule } from '@angular/material/divider'; 
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-controle-inteligente-imagem',
@@ -25,15 +26,17 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatSnackBarModule,
     MatTableModule,
     MatIconModule,
-    MatProgressBarModule
-  ],
+    MatProgressBarModule,
+    MatDividerModule,
+    MatCardModule
+    ],
   templateUrl: './controle-inteligente-imagem.component.html',
   styleUrl: './controle-inteligente-imagem.component.scss',
   providers: [ControleInteligenteImagemService]
 })
 
 export class ControleInteligenteImagemComponent {
-  displayedColumns: string[] = ['content', 'createdAt', 'title'];
+  displayedColumns: string[] = ['title', 'content', 'createdAt'];
   dataSource: any;
 
   itens: Item[] = [];
@@ -125,6 +128,11 @@ export class ControleInteligenteImagemComponent {
       },
       error: () => this.showMessage('Erro ao buscar itens!', true),
     });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   private showMessage(message: string, isError: boolean) {
