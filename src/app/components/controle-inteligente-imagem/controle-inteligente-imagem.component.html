@@ -9,8 +9,9 @@
             [ngStyle]="isButtonDisabled == true ? { 'color': '#999999' } : { 'color': 'white', 'background-color': '#008000' }">
             <mat-icon>cloud_upload</mat-icon>Enviar Arquivo</button>
     </div>
-    <br><br>
+    <br>
     <mat-progress-bar *ngIf="isUploading" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+    <span *ngIf="isUploading">Carregando...</span>
 
     <table mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
 
