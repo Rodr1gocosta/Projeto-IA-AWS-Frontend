@@ -8,18 +8,22 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ControleInteligenteImagemService } from '../service/controle-inteligente-imagem.service';
 import { Item } from '../model/item';
 import { HttpClientModule } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-controle-inteligente-imagem',
   imports: [
+    CommonModule,
     HttpClientModule,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatSnackBarModule,
-    MatTableModule
+    MatTableModule,
+    MatIconModule
   ],
   templateUrl: './controle-inteligente-imagem.component.html',
   styleUrl: './controle-inteligente-imagem.component.scss',
@@ -32,19 +36,38 @@ export class ControleInteligenteImagemComponent {
 
   itens: Item[] = [];
 
+  fileName: string = '';
+
   selectedFile: File | null = null;
-  
-  constructor( 
+  isButtonDisabled: boolean = true;
+
+
+  constructor(
     private snackBar: MatSnackBar,
-    private itemService: ControleInteligenteImagemService  
-  ) {}
+    private itemService: ControleInteligenteImagemService
+  ) { }
 
   ngOnInit() {
     this.findItems();
   }
 
   onFileChange(event: any) {
-    this.selectedFile = event.target.files[0];
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const [file] = input.files;
+
+      this.fileName = file.name;
+      this.selectedFile = file;
+
+      setTimeout(() => {
+        this.isButtonDisabled = false;
+      }, 500);
+    } else {
+      this.fileName = '';
+      this.selectedFile = null;
+      this.isButtonDisabled = true;
+    }
   }
 
   getPresignedUrl() {
@@ -60,7 +83,7 @@ export class ControleInteligenteImagemComponent {
       next: (response) => this.uploadFile(response.url, contentType),
       error: () => this.showMessage('Erro ao obter URL pré-assinada!', true),
     });
-    
+
   }
 
   uploadFile(presignedUrl: string, contentType: string) {
@@ -76,7 +99,7 @@ export class ControleInteligenteImagemComponent {
         this.itens = response as Item[];
         this.dataSource = new MatTableDataSource<Item>(this.itens);
       },
-      error: () => this.showMessage('Erro ao buscar itens!', true),  
+      error: () => this.showMessage('Erro ao buscar itens!', true),
     });
   }
 

@@ -1,35 +1,39 @@
 <div class="container">
-    <h1 class="title">Upload de Imagem para AWS S3</h1>
+    <h1 class="title">Controle de Imagem Inteligente</h1>
+    <div class="enviar-arquivo">
+        <label class="custom-file-upload">
+            <input type="file" class="hidden" (change)="onFileChange($event)" accept="image/*">
+            <span>{{ fileName || '📷 Escolher Imagem' }}</span>
+        </label>
+        <button class="button" mat-flat-button (click)="getPresignedUrl()" [disabled]="isButtonDisabled"
+            [ngStyle]="isButtonDisabled == true ? { 'color': '#999999' } : { 'color': 'white', 'background-color': '#008000' }">
+            <mat-icon>cloud_upload</mat-icon>Enviar Arquivo</button>
+    </div>
 
-    <input type="file" (change)="onFileChange($event)" />
+    <table mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
 
-    <button mat-raised-button color="primary" (click)="getPresignedUrl()">Enviar Arquivo</button>
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="content">
+            <th mat-header-cell *matHeaderCellDef> Conteúdo </th>
+            <td mat-cell *matCellDef="let element"> {{element.content}} </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef> Data </th>
+            <td mat-cell *matCellDef="let element"> {{element.createdAt}} </td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef> Título </th>
+            <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
 </div>
-
-
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
-    <!--- Note that these columns can be defined in any order.
-          The actual rendered columns are set as a property on the row definition" -->
-
-    <!-- Position Column -->
-    <ng-container matColumnDef="content">
-        <th mat-header-cell *matHeaderCellDef> Conteúdo </th>
-        <td mat-cell *matCellDef="let element"> {{element.content}} </td>
-    </ng-container>
-
-    <!-- Name Column -->
-    <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef> Data </th>
-        <td mat-cell *matCellDef="let element"> {{element.createdAt}} </td>
-    </ng-container>
-
-    <!-- Weight Column -->
-    <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef> Título </th>
-        <td mat-cell *matCellDef="let element"> {{element.title}} </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
