@@ -10,6 +10,7 @@ import { Item } from '../model/item';
 import { HttpClientModule } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @Component({
@@ -23,7 +24,8 @@ import { CommonModule } from '@angular/common';
     MatInputModule,
     MatSnackBarModule,
     MatTableModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressBarModule
   ],
   templateUrl: './controle-inteligente-imagem.component.html',
   styleUrl: './controle-inteligente-imagem.component.scss',
@@ -35,12 +37,11 @@ export class ControleInteligenteImagemComponent {
   dataSource: any;
 
   itens: Item[] = [];
-
-  fileName: string = '';
-
   selectedFile: File | null = null;
   isButtonDisabled: boolean = true;
-
+  isUploading: boolean = false;
+  uploadProgress: number = 0;
+  fileName: string = '';
 
   constructor(
     private snackBar: MatSnackBar,
@@ -87,9 +88,32 @@ export class ControleInteligenteImagemComponent {
   }
 
   uploadFile(presignedUrl: string, contentType: string) {
+    this.isUploading = true;
+    this.uploadProgress = 0;
+  
+    const interval = setInterval(() => {
+      if (this.uploadProgress < 100) {
+        this.uploadProgress += 100 / 15;
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+
     this.itemService.uploadFile(presignedUrl, this.selectedFile!, contentType).subscribe({
-      next: () => this.showMessage('Arquivo enviado com sucesso!', false),
-      error: () => this.showMessage('Erro ao enviar arquivo para o S3!', true),
+      next: () => {
+        this.showMessage('Arquivo enviado com sucesso. Aguarde o carregamento na tabela!', false);
+
+        setTimeout(() => {
+          this.isUploading = false;
+          this.findItems();
+        }, 15000);
+      },
+
+      error: () => {
+        this.showMessage('Erro ao enviar arquivo para o S3!', true);
+        clearInterval(interval);
+        this.isUploading = false;
+      },
     });
   }
 
