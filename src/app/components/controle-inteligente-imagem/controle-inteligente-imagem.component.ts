@@ -124,6 +124,9 @@ export class ControleInteligenteImagemComponent {
     this.itemService.findItems().subscribe({
       next: (response) => {
         this.itens = response as Item[];
+
+        this.itens.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
         this.dataSource = new MatTableDataSource<Item>(this.itens);
       },
       error: () => this.showMessage('Erro ao buscar itens!', true),
